@@ -1,0 +1,86 @@
+name: Generate Free AI Video
+
+# Trigger this workflow on demand from the Actions tab, or run it locally with
+#   python3 generate_video.py --title "..." --script "..." ...
+# It renders a narrated HD MP4 for free on GitHub's runner, then uploads it as a
+# downloadable Artifact named "generated-mp4-video".
+
+on:
+  workflow_dispatch:
+    inputs:
+      video_title:
+        description: "Video Title (shown on the first scene slide)"
+        required: true
+        default: "My Free AI Video"
+      script:
+        description: "Narration script. Separate scenes with the pipe '|'. Lines starting with '#' are title text."
+        required: true
+        default: "Welcome to my free AI video.|This was generated 100% for free.|No paid APIs or subscriptions were required!"
+      voice:
+        description: "AI voice actor"
+        required: true
+        type: choice
+        default: en-US-ChristopherNeural
+        options:
+          - en-US-ChristopherNeural  # Male - US
+          - en-US-JennyNeural        # Female - US
+          - en-US-GuyNeural          # Male - US
+          - en-GB-SoniaNeural        # Female - UK
+          - en-AU-WilliamNeural      # Male - Australia
+      theme:
+        description: "Visual theme"
+        required: true
+        type: choice
+        default: gradient
+        options:
+          - dark      # Slate Dark Navy
+          - gradient  # Royal Purple to Deep Blue
+          - ocean     # Teal / Ocean Emerald
+          - sunset    # Warm Sunset Red/Orange
+      output_filename:
+        description: "Output file name (must end in .mp4)"
+        required: true
+        default: generated_video.mp4
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install FFmpeg and Python libraries
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          pip install --quiet edge-tts moviepy pillow numpy
+
+      - name: Verify versions
+        run: |
+          ffmpeg -version | head -1
+          python3 -c "import moviepy, PIL, numpy; print('moviepy', moviepy.__version__, '| pillow', PIL.__version__)"
+
+      - name: Generate the AI video
+        run: |
+          python3 generate_video.py \
+            --title "${{ inputs.video_title }}" \
+            --script "${{ inputs.script }}" \
+            --voice "${{ inputs.voice }}" \
+            --theme "${{ inputs.theme }}" \
+            --output "${{ inputs.output_filename }}" \
+            --ffmpeg "$(command -v ffmpeg)"
+
+      - name: Upload the video as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-mp4-video
+          path: ${{ inputs.output_filename }}
+          if-no-files-found: error
