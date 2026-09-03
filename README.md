@@ -44,6 +44,37 @@ You can trigger and download custom AI videos directly from the GitHub web inter
 
 ---
 
+### 🎥 Camera motion & real background media (per scene)
+
+Every scene can optionally attach a **camera motion** and/or a **background media file**
+using the `::` separator after the narration text:
+
+```
+Scene narration text
+Scene narration text::motion
+Scene narration text::motion::media_path
+```
+
+The **motion** value is one of:
+`zoom_in` · `zoom_out` · `pan_left` · `pan_right` · `pan_up` · `pan_down` · `static`.
+
+If you omit the motion, an automatic one cycles through the scenes for variety.
+The **media_path** is a file committed in the same repo — a **photo** (`.jpg/.png/...`)
+or a **short clip** (`.mp4/.mov/...`). When used it replaces the Pillow gradient
+background (covering the frame with no black bars), and the chosen motion is applied
+on top. The caption text still overlays it in a semi-transparent box.
+
+**Worked example** (title + 3 scenes, mixing motion + a real image):
+
+```
+# My Product Overview
+Welcome to our product overview::zoom_out
+This section pans across a real photo::pan_right::assets/photo.jpg
+And here is a short clip with motion::zoom_in::assets/clip.mp4
+```
+
+Scenes fade (crossfade) into each other rather than cutting hard.
+
 ## 🛠️ Technical architecture (for developers & maintainers)
 
 ### 1. The core Python script (`generate_video.py`)
@@ -92,4 +123,10 @@ This script handles the whole rendering pipeline:
 
 ### Extra options
 - `--rate +8%` / `--volume -10%` — adjust narration speed/volume.
-- `--list-themes` / `--list-voices` — print the available options.
+- `--list-themes` / `--list-voices` / `--list-motions` — print the available options.
+
+### Handling media paths in the workflow
+Because the `script` input is passed straight to the generator, a `::media_path` must
+point to a file **committed in the same repository** (e.g. `assets/photo.jpg`). Upload
+any media files you want to use into the repo first (they end up next to
+`generate_video.py`), then reference them in the script.

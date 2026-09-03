@@ -13,7 +13,7 @@ on:
         required: true
         default: "My Free AI Video"
       script:
-        description: "Narration script. Separate scenes with the pipe '|'. Lines starting with '#' are title text."
+        description: "Narration script. Separate scenes with '|'. Lines starting with '#' are title text. Optional per scene: '::motion' (zoom_in|zoom_out|pan_left|pan_right|pan_up|pan_down|static) and '::media_path' (a file in the repo, e.g. ::photo.jpg or ::clip.mp4)."
         required: true
         default: "Welcome to my free AI video.|This was generated 100% for free.|No paid APIs or subscriptions were required!"
       voice:
