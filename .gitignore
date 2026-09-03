@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 generated_video.mp4
+avatar_demo.mp4
+mix_test.mp4
+output/

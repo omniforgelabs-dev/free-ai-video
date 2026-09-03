@@ -1,0 +1,17 @@
+{
+  "Mother": {
+    "photo": "assets/mother.jpg",
+    "voice": "en-US-JennyNeural",
+    "motion": "zoom_in"
+  },
+  "Son": {
+    "photo": "assets/son.jpg",
+    "voice": "en-US-GuyNeural",
+    "motion": "zoom_in"
+  },
+  "Neighbor": {
+    "photo": "assets/neighbor.jpg",
+    "voice": "en-GB-SoniaNeural",
+    "motion": "zoom_in"
+  }
+}
